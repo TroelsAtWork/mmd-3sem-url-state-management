@@ -1,8 +1,24 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useCallback } from "react";
+
 const page = () => {
   const sizes = ["sx", "s", "m", "l", "xl"];
-  const colors = ["White", "Black", "Gray"];
+  const colors = ["White", "Black&White", "Gray"];
+  const searchParams = useSearchParams();
+
+  const createQueryString = useCallback(
+    (name, value) => {
+      const params = new URLSearchParams(searchParams);
+      params.set(name, value);
+
+      return params.toString();
+    },
+    [searchParams]
+  );
+
   return (
     <main className="flex-1">
       <section className="mx-auto grid max-w-7xl p-8">
@@ -30,13 +46,19 @@ const page = () => {
                 <div className="flex flex-wrap gap-3">
                   {sizes.map((size, index) => {
                     return (
-                      <Link
-                        key={index}
-                        className="border-neutral-200 text-neutral-900 hover:bg-neutral-100 relative flex min-w-[5ch] items-center justify-center rounded border p-3 text-center text-sm font-semibold"
-                        href="#"
-                      >
-                        {size}
-                      </Link>
+                      <>
+                        <label for={size}>{size}</label>
+                        <input
+                          id={size}
+                          type="radio"
+                          key={index}
+                          className={`${
+                            searchParams.get("size") == size &&
+                            "bg-neutral-100 "
+                          }border-neutral-200 text-neutral-900 hover:bg-neutral-100 relative flex min-w-[5ch] items-center justify-center rounded border p-3 text-center text-sm font-semibold`}
+                          //href={`?${createQueryString("size", size)}`}
+                        />
+                      </>
                     );
                   })}
                 </div>
@@ -48,8 +70,11 @@ const page = () => {
                     return (
                       <Link
                         key={index}
-                        className="border-neutral-200 text-neutral-900 hover:bg-neutral-100 relative flex min-w-[5ch] items-center justify-center rounded border p-3 text-center text-sm font-semibold"
-                        href="#"
+                        className={`${
+                          searchParams.get("color") == color &&
+                          "bg-neutral-100 "
+                        }border-neutral-200 text-neutral-900 hover:bg-neutral-100 relative flex min-w-[5ch] items-center justify-center rounded border p-3 text-center text-sm font-semibold`}
+                        href={`?${createQueryString("color", color)}`}
                       >
                         {color}
                       </Link>
@@ -58,12 +83,12 @@ const page = () => {
                 </div>
               </fieldset>
               <div className="mt-8">
-                <button
-                  type="submit"
+                <Link
+                  href={`/payment?${searchParams}`}
                   className="h-12 items-center rounded-md bg-neutral-900 px-6 py-3 text-base font-medium leading-6 text-white shadow hover:bg-neutral-800"
                 >
                   <span>Add to cart</span>
-                </button>
+                </Link>
               </div>
               <div className="mt-8 space-y-6 text-sm text-neutral-500">
                 <div>
